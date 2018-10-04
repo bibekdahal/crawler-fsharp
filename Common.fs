@@ -1,4 +1,4 @@
-module Cralwer.Common
+module Crawler.Common
 
 type Page = {url: string; nestLevel: int}
 

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cralwer", "Cralwer.fsproj", "{776CC80C-E940-469E-A972-8E927884CC9D}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Crawler", "Crawler.fsproj", "{776CC80C-E940-469E-A972-8E927884CC9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

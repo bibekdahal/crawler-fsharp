@@ -1,4 +1,4 @@
-module Cralwer.UrlValidator
+module Crawler.UrlValidator
 open System
 open System.Collections.Generic
 open System.Net

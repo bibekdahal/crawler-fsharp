@@ -1,4 +1,4 @@
-module Cralwer.Worker
+module Crawler.Worker
 open System
 open System.Threading
 open Common
@@ -13,8 +13,7 @@ let Agent (master: MailboxProcessor<MasterMessage>) = MailboxProcessor.Start(fun
         let! msg = inbox.Receive()
         match msg with 
         | WorkAvailable ->
-            if inbox.CurrentQueueLength = 0 then
-                master.Post (MasterMessage.RequestPage inbox)
+            master.Post (MasterMessage.RequestPage inbox)
                 
         | ProcessPage page ->
             if UrlValidator.validateUrl page.url then 

@@ -1,7 +1,7 @@
 ﻿module Crawler.Program
 
-open Cralwer
-open Cralwer.Common
+open Crawler
+open Crawler.Common
 open System
 open System.Collections.Generic
 open System.IO

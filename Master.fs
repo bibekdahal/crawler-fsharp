@@ -1,4 +1,4 @@
-module Cralwer.Master
+module Crawler.Master
 open System
 open System.Collections.Generic
 open Common

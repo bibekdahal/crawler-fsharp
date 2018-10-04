@@ -1,4 +1,4 @@
-module Cralwer.UrlsExtractor
+module Crawler.UrlsExtractor
 
 open System
 open System.Net
