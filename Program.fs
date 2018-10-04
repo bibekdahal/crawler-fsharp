@@ -11,7 +11,7 @@ let rec parseCommandLine (args: string list) (kwargMap: Map<string, string>) (ar
     | [] ->
         (kwargMap, argList)
         
-    |  key::value::tail when key.[0..1] = "--" ->
+    |  key::value::tail when key.StartsWith "--" ->
         let newMap = kwargMap.Add(key, value)
         parseCommandLine tail newMap argList
     
@@ -20,7 +20,7 @@ let rec parseCommandLine (args: string list) (kwargMap: Map<string, string>) (ar
         parseCommandLine tail kwargMap newList
         
 [<EntryPoint>]
-let main args = 
+let main args =
     let (kwargMap, argListRev) = parseCommandLine (args |> Array.toList)  Map.empty []
     let argList = argListRev |> List.rev
     

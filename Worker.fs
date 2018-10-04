@@ -17,9 +17,11 @@ let Agent (master: MailboxProcessor<MasterMessage>) = MailboxProcessor.Start(fun
                 master.Post (MasterMessage.RequestPage inbox)
                 
         | ProcessPage page ->
-            Console.WriteLine (page.url + " " + (uniqueWorker |> string))
-            Thread.Sleep 2000
-            master.Post(MasterMessage.OnNewPages([]))
+            if UrlValidator.validateUrl page.url then 
+                Console.WriteLine (page.url + " " + (uniqueWorker |> string))
+                let urls = UrlsExtractor.extract page.url
+                let pages = urls |> List.map (fun url -> { url = url; nestLevel = page.nestLevel + 1})
+                master.Post(MasterMessage.OnNewPages pages)
         return! loop()
     }
     loop()

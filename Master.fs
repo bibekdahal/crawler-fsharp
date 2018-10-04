@@ -4,7 +4,7 @@ open System.Collections.Generic
 open Common
 
 let Agent (seedUrls: string list) (maxDepth: int) = MailboxProcessor<MasterMessage>.Start(fun inbox ->
-    let workers = [ 1..2 ] |> List.map (fun _ -> Worker.Agent(inbox))
+    let workers = [ 1..Environment.ProcessorCount ] |> List.map (fun _ -> Worker.Agent(inbox))
     
     let completedUrls = new HashSet<string>()
     let pendingPages = new Queue<Page>()
