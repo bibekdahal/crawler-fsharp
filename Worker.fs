@@ -2,10 +2,11 @@ module Crawler.Worker
 open System
 open System.Threading
 open Common
+open Crawler
 
     
 let mutable index = 0
-let Agent (master: MailboxProcessor<MasterMessage>) = MailboxProcessor.Start(fun inbox ->
+let Agent (master: MailboxProcessor<MasterMessage>) (outputDir: Option<string>) = MailboxProcessor.Start(fun inbox ->
     let uniqueWorker = index + 1
     index <- index + 1
     
@@ -16,8 +17,8 @@ let Agent (master: MailboxProcessor<MasterMessage>) = MailboxProcessor.Start(fun
             master.Post (MasterMessage.RequestPage inbox)
                 
         | ProcessPage page ->
-            if UrlValidator.validateUrl page.url then 
-                Console.WriteLine (page.url + " " + (uniqueWorker |> string))
+            if UrlValidator.validateUrl page.url then
+                Downloader.downloadUrl page.url outputDir 
                 let urls = UrlsExtractor.extract page.url
                 let pages = urls |> List.map (fun url -> { url = url; nestLevel = page.nestLevel + 1})
                 master.Post(MasterMessage.OnNewPages pages)

@@ -9,6 +9,7 @@
         <Compile Include="Common.fs" />
         <Compile Include="UrlsExtractor.fs" />
         <Compile Include="UrlValidator.fs" />
+        <Compile Include="Downloader.fs" />
         <Compile Include="Worker.fs" />
         <Compile Include="Master.fs" />
         <Compile Include="Program.fs" />

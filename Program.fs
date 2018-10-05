@@ -32,8 +32,9 @@ let main args =
         match maxDepthOption with 
             | Some str -> str |> int
             | None -> 3
+    let outputDir = kwargMap.TryFind "--output"
     
-    let master = Master.Agent seedUrls maxDepth
+    let master = Master.Agent seedUrls maxDepth outputDir
     master.Post MasterMessage.Start
     
     Console.ReadLine() |> ignore
