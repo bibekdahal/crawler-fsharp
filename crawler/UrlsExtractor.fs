@@ -4,6 +4,7 @@ open System
 open System.Net
 open HtmlAgilityPack
 
+// Helper function to transform relative paths to absolute URLs
 let transformPath (url: string) (path: string) =
     let (canCreate, _) = Uri.TryCreate(path, UriKind.Absolute)
     if canCreate then
@@ -17,9 +18,15 @@ let transformPath (url: string) (path: string) =
     else 
         url + "/" + path
 
+// Helper function to clean a URL. Currently it only removes trailing '#'
 let cleanUrl (url: String) =
     url.Trim '#'
 
+// A post process function that transforms and cleans new URLs based on
+// parent URLs
+let postProcessUrl (parentUrl: string) = transformPath parentUrl >> cleanUrl
+
+// Actual extraction function that uses HtmlAgilityPack to scrape hyperlinks
 let extract (url: string) =            
     try
         let request = WebRequest.Create(Uri url) :?> HttpWebRequest
@@ -35,7 +42,6 @@ let extract (url: string) =
             |> List.ofSeq
             |> List.map (fun node -> node.GetAttributeValue("href", null))
             |> List.where (fun item -> not(String.IsNullOrEmpty(item)))
-            |> List.map (fun path -> path |> transformPath url)
-            |> List.map (fun s -> s |> cleanUrl)
+            |> List.map (fun newUrl -> newUrl |> postProcessUrl url)
     with
         | _ -> []
