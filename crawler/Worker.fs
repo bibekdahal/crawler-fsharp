@@ -1,8 +1,6 @@
-module Crawler.Worker
-open System
-open System.Threading
+module crawler.Worker
+
 open Common
-open Crawler
 
     
 let mutable index = 0

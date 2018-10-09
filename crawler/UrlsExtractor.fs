@@ -1,14 +1,11 @@
-module Crawler.UrlsExtractor
+module crawler.UrlsExtractor
 
 open System
 open System.Net
 open HtmlAgilityPack
 
-// TODO: User Agent
-
-
 let transformPath (url: string) (path: string) =
-    let (canCreate, uri) = Uri.TryCreate(path, UriKind.Absolute)
+    let (canCreate, _) = Uri.TryCreate(path, UriKind.Absolute)
     if canCreate then
         path
     else if path.StartsWith "/" then
@@ -20,10 +17,15 @@ let transformPath (url: string) (path: string) =
     else 
         url + "/" + path
 
+let cleanUrl (url: String) =
+    url.Trim '#'
+
 let extract (url: string) =            
     try
-        let req = WebRequest.Create(Uri(url))
-        let stream = req.GetResponse().GetResponseStream()
+        let request = WebRequest.Create(Uri url) :?> HttpWebRequest
+        request.UserAgent <- Common.USER_AGENT
+
+        let stream = request.GetResponse().GetResponseStream()
         let reader = new IO.StreamReader(stream)
         let html = reader.ReadToEnd()
         
@@ -34,14 +36,6 @@ let extract (url: string) =
             |> List.map (fun node -> node.GetAttributeValue("href", null))
             |> List.where (fun item -> not(String.IsNullOrEmpty(item)))
             |> List.map (fun path -> path |> transformPath url)
+            |> List.map (fun s -> s |> cleanUrl)
     with
         | _ -> []
-    
-
-//let urls = ["http://titan.dcs.bbk.ac.uk/~kikpef01/testpage.html"]
-//
-//urls
-//|> List.map fetch
-//|> Async.Parallel
-//|> Async.RunSynchronously
-//|> ignore

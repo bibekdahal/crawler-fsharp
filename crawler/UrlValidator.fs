@@ -1,13 +1,13 @@
-module Crawler.UrlValidator
+module crawler.UrlValidator
+
 open System
 open System.Collections.Generic
 open System.Net
 open System.Text.RegularExpressions
+open crawler
 
 type Rule = { ruleType: string; path: string; }
 let siteRules = Dictionary<string, Rule list>()
-
-// TODO: User Agent
 
 let isValidScheme scheme =
     scheme = Uri.UriSchemeHttp || scheme = Uri.UriSchemeHttps
@@ -22,8 +22,10 @@ let regexify (originalStr: string) =
 let parseRules (uri: Uri) =
     let robotsUri = (new UriBuilder(uri.Scheme, uri.Host, uri.Port, "/robots.txt")).Uri
     
-    let req = WebRequest.Create(robotsUri)
-    use stream = req.GetResponse().GetResponseStream()
+    let request = WebRequest.Create robotsUri :?> HttpWebRequest
+    request.UserAgent <- Common.USER_AGENT
+
+    use stream = request.GetResponse().GetResponseStream()
     use reader = new IO.StreamReader(stream)
     let html = reader.ReadToEnd()
     
@@ -89,7 +91,18 @@ let checkRuleFor (uri: Uri) =
     with
         | _ -> true
 
+let canRead (uri: Uri): bool =
+    try
+        let request = WebRequest.Create uri :?> HttpWebRequest 
+        request.Method <- "HEAD"
+        request.UserAgent <- Common.USER_AGENT
+        use response = request.GetResponse() :?> HttpWebResponse
+        response.Close()
+        response.StatusCode = HttpStatusCode.OK
+    with
+        _ -> false
+
 let validateUrl (url: string) =
-     let (canCreate, uri) = Uri.TryCreate(url, UriKind.Absolute)
-     let isValid = canCreate && (isValidScheme uri.Scheme)
-     isValid && checkRuleFor uri
+    let (canCreate, uri) = Uri.TryCreate(url, UriKind.Absolute)
+    let isValid = canCreate && (isValidScheme uri.Scheme) && (canRead uri)
+    isValid && checkRuleFor uri

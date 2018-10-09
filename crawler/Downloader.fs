@@ -1,4 +1,5 @@
-module Crawler.Downloader
+module crawler.Downloader
+
 open System
 open System.IO
 open System.Net
@@ -6,7 +7,9 @@ open System.Net
 let downloadUrl (url: string) (outputDir: Option<string>) =
     Console.WriteLine url
     if outputDir.IsSome then
-        let webClient = new WebClient()
+        use webClient = new WebClient()
+        webClient.Headers.Add("user-agent", Common.USER_AGENT)
+
         let dirInfo = Directory.CreateDirectory(outputDir.Value)
-        let sanitizedPath = url.Replace("://", "_").Replace("/", "_").Replace(".", "_")
+        let sanitizedPath = String.Join("_", url.Split(Path.GetInvalidFileNameChars()))
         webClient.DownloadFile(url, Path.Combine(dirInfo.ToString(), sanitizedPath))
